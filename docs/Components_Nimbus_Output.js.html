@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Components/Nimbus/Output.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Components/Nimbus/Output.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component, useState } from 'react';
+import $ from 'jquery'
+import {Tabs, Tab, TabList, TabPanel} from 'react-tabs'
+import 'react-tabs/style/react-tabs.css';
+import {Row, Col} from 'react-bootstrap'
+import './Output.css'
+import FileSaver, { saveAs, fileSaver } from 'file-saver';
+import Table from 'react-bootstrap/Table';
+import Button from '@material-ui/core/Button';
+
+const buttonStyle=
+        {
+            backgroundColor: "rgb(99, 81, 206)",
+            border: "none",
+            color: "white",
+            padding: "10px 28px",
+            textDecoration: "none",
+            margin: "10px 25px",
+            cursor: "pointer",
+            marginLeft: "40%",
+            marginTop: "60px",
+            borderRadius:"5px"
+          }
+const tableStyle={
+        marginTop:"30px",
+        marginLeft:"auto",
+        marginRight:"auto",
+        textAlign: "center",
+        width: "95%",
+        height: "150px",
+        overFlow:"scroll",
+        overflowX: "auto",
+
+}
+
+/**
+ * Describes the Ouput Window on the nimbus EDA webpage.
+ * Describes the layout of the Output Window - where all the components
+ * are present in the layout. Tab component is used to visualize the 
+ * Excel file data as tables. A download button is present on the bottom 
+ * which gives user a choice to download the Excel file.
+ * @returns A visual representation of the output window on the nimbus EDA page
+ */
+
+export class Output extends React.PureComponent {
+    // Constructor
+    constructor(props) {
+        super(props);
+        // All the state values
+        this.state={
+          rowdata:"",
+          loading:false,
+          imageExists:false,
+        }
+        // Binding 'this' keyword for different methods used
+        this.handleClick = this.handleClick.bind(this);
+        this.handleSelect = this.handleSelect.bind(this);
+        this.handleClickImageButton = this.handleClickImageButton.bind(this);
+         
+      }
+      handleClickImageButton = e => {
+        //let filename = this.props.filename;
+        console.log("BUTTON2")
+        const jsx=&lt;div>&lt;img src="https://miro.medium.com/max/3840/1*jojTznh4HOX_8cGw_04ODA.png" />&lt;/div>
+        return jsx;
+      }
+
+      // Method to handle when tabs are clicked on
+      handleSelect(index, last) {
+        console.log('Selected tab: ' + index + ', Last tab: ' + last);
+      }
+      // Method to handle click of the button
+      handleClick = e => {
+        FileSaver.saveAs("https://nimbusrestapi.azurewebsites.net/results?name="+this.props.filename+"&amp;type=xlsx");
+        if (this.state.imageExists){
+          FileSaver.saveAs("https://nimbusrestapi.azurewebsites.net/results?name="+this.props.filename+"&amp;type=png");
+        }
+      
+      }
+    render() {
+        console.log(this.props)
+        this.state.imageExists = this.props.image;
+        // Getting the row data(every row of a csv file) from parent element and storing it as a state value
+        this.state.rowdata=this.props.list;
+        // Getting the keys and storing them as tabnames
+        let tabnames=Object.keys(this.props.tabledata);
+        // Getting the data for the first tab name
+        const htmlObject = $(this.props.tabledata[tabnames[0]])
+        // Creating three temporary variables
+        var x;
+        var y;
+        var z;
+        // For every tab name:
+        for (var l in tabnames){
+          // Creating an empty string
+          let html = "";
+          for (x in Object.values(this.state.rowdata)){
+              // Comparing and getting the value for that particular tab
+              if (x==l){
+                // Getting the corresponding value from the dictionary
+                y=(Object.values(this.state.rowdata))[x];
+                // For each loop to add each and every row value to the html string
+                $.each(y, function(rowNumber,rowData){
+                    
+                    
+                    if (rowNumber==0){
+                      html += "&lt;tr>";
+                  $.each(rowData, function(columnNumber,columnData){
+ 
+                      html += "&lt;th>"+columnData+"&lt;/th>";
+                  });
+                  html += "&lt;/tr>";
+                    }
+                    else{
+                      html += "&lt;tr>";
+                      $.each(rowData, function(columnNumber,columnData){
+ 
+                        html += "&lt;td>"+columnData+"&lt;/td>";
+                    });
+                    html += "&lt;/tr>";
+                    }
+                      
+                });
+              }
+            }
+            // Adding all the data to the corresponding table created
+            $("#"+l).html(html);
+          }
+
+    return (
+      &lt;div style={{padding:"0px 10px"}}>
+          {
+            //Rendering tabs(react-tabs library) on the Ouput Window
+          }
+          &lt;Tabs
+          onSelect={this.handleSelect}
+          forceRenderTabPanel={true}
+          >
+            {
+              // Creating tabs as per the data sent from the backend
+            }
+            &lt;TabList>
+              {tabnames.map((value, index) => {
+                    console.log(value)
+                    return (
+                      
+                      &lt;Tab key={index+"tab"}>{value}&lt;/Tab> 
+                      
+                      
+                      )
+                  
+                  
+                  }
+                    
+              )}
+              &lt;/TabList>
+            {
+              // Creating tables accordingly for every tab
+              // Rendering the content on each tab
+            }
+            {tabnames.map((value, index) => {
+                    console.log(value)
+                    if (value=="decision_summary"){
+                      return (&lt;>&lt;Button onClick={() => {return(&lt;TabPanel id={index+"tabpanel"} key={value}>
+                      {console.log("BUTTON")}                    
+                      &lt;Row className="table" style={{overflowY: "auto",overflowX: "auto",textAlign:"center",margin:"auto"}}>
+                          &lt;Col>
+                            &lt;table id={index} style={tableStyle}>&lt;/table>
+                          &lt;/Col>
+                      &lt;/Row>
+                    &lt;/TabPanel>)}} variant="outlined" color="primary">
+                      Sumamry
+                    &lt;/Button>
+
+                    &lt;Button onClick={this.handleClickImageButton} variant="outlined" color="primary">
+                      Image
+                    &lt;/Button>
+                        &lt;/>)
+                    }
+                    else{
+                      return (&lt;TabPanel id={index+"tabpanel"} key={value}>
+                                            
+                                &lt;Row className="table" style={{overflowY: "auto",overflowX: "auto",textAlign:"center",margin:"auto"}}>
+                                    &lt;Col>
+                                      &lt;table id={index} style={tableStyle}>&lt;/table>
+                                    &lt;/Col>
+                                &lt;/Row>
+                              &lt;/TabPanel>)
+                    }
+                            
+                    }
+                    
+                    )}
+
+          &lt;/Tabs>
+          {
+            // Button to download the excel file from the backend API
+          }
+          &lt;button className="center" onClick={this.handleClick} style={buttonStyle}>Download&lt;/button>
+      &lt;/div>
+    );
+  }
+}
+
+export default Output;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnalysisOption.html">AnalysisOption</a></li><li><a href="Output.html">Output</a></li></ul><h3>Global</h3><ul><li><a href="global.html#about">about</a></li><li><a href="global.html#Card">Card</a></li><li><a href="global.html#contactUs">contactUs</a></li><li><a href="global.html#createLayout">createLayout</a></li><li><a href="global.html#FileInput">FileInput</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Landingpage">Landingpage</a></li><li><a href="global.html#Nimbus">Nimbus</a></li><li><a href="global.html#otherTools">otherTools</a></li><li><a href="global.html#Router1">Router1</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu May 06 2021 00:37:49 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

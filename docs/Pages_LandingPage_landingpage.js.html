@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Pages/LandingPage/landingpage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Pages/LandingPage/landingpage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, {useEffect, useState, useMemo} from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Row, Col } from 'react-bootstrap'
+import Card from '../../Components/Landingpage/Card'
+import Header from '../../Components/Shared/Header/Header'
+import Footer from '../../Components/Shared/Footer/Footer'
+import './landingpage.css';
+import { BrowserRouter, Route, Link, Router, Redirect } from "react-router-dom";
+import {getProjects} from '../../Services/data-service';
+
+
+/** 
+ * Describes the layout of the Landingpage, what other components are
+ * included and where they are included on the webpage.
+ * Creating a dynamic layout for the landing page using a for loop.
+ * This layout here decides how many columns or cards gets added to the 
+ * layout for every row.
+ * @returns A visual representation of the Landingpage
+*/
+
+const createLayout = (cards, rowlength) => {
+    console.log("Create Layout Called")
+    const output = [];
+    for (let i = 0; i &lt; cards.length; i = i + rowlength) {
+        const jsx = &lt;Row className="justify-content-md-center" key={i}>
+            {
+                [...Array(rowlength)].map((el, index) => {
+                    return (i) + index &lt; cards.length ? (
+                        &lt;Col sm="auto" md="auto" key={`${i}-${index}`}>
+                            &lt;Link to={`/${cards[(i) + index].url}`}>
+                                &lt;Card name={cards[(i) + index].name} bodyText={cards[(i) + index].bodyText}/>
+                            &lt;/Link>
+                        &lt;/Col> 
+                    ) : null;
+                })
+
+            }
+        &lt;/Row>
+
+        output.push(jsx);
+        
+    }
+    return output;
+}    
+
+/**
+ * The functional component describes the homepage of nimbus.
+ * @returns a visual representation of nimbus homepage
+ */
+
+function Landingpage() {
+
+    // Creating hook states to store the information of each card
+    console.log("Landing Page Rendered")
+    const [projects, setProjects] = useState(null);
+    // Creating useEffect hook to render this component only once
+    useEffect(() => {
+        // Calling the method from the dummyCardsData json file to store all the values in the hook state
+        getProjects()
+        .then((res) => {console.log(res);
+            setProjects(res)
+        
+        })
+    }, [])
+
+    // Creating this constant using useMemo hook to re-render the webpage only if there is a change in the data stored in projects
+    const createdLayout = useMemo(() => {
+        console.log(projects)
+        if(projects?.length){
+            return createLayout(projects, 3)
+        }
+        else{
+            return null;
+        }
+    }, [projects])
+    console.log(createdLayout);
+
+    return (
+        
+        &lt;div style={{height:"100%"}}>
+            &lt;Header/>
+            &lt;br>&lt;/br>
+            {
+                //Creating a container to hold the rows and columns which are dynamically created
+            }
+            &lt;Container fluid>
+                &lt;h1 style={{textAlign:"center"}}>Welcome to GHD Advanced Analytics&lt;/h1>
+                &lt;h3 className="center">Explore all the tools on the Data Analytics Portal here&lt;/h3>
+                &lt;br>&lt;/br>
+                    {
+                        //Calling the createdLayout to render the rows and columns of data(cards)
+                    }
+                    {createdLayout}
+                   
+            &lt;/Container>
+            &lt;Footer className="footer"/>
+        &lt;/div>
+        
+    )
+};
+
+export default Landingpage;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnalysisOption.html">AnalysisOption</a></li><li><a href="Output.html">Output</a></li></ul><h3>Global</h3><ul><li><a href="global.html#about">about</a></li><li><a href="global.html#Card">Card</a></li><li><a href="global.html#contactUs">contactUs</a></li><li><a href="global.html#createLayout">createLayout</a></li><li><a href="global.html#FileInput">FileInput</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Landingpage">Landingpage</a></li><li><a href="global.html#Nimbus">Nimbus</a></li><li><a href="global.html#otherTools">otherTools</a></li><li><a href="global.html#Router1">Router1</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu May 06 2021 00:37:49 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

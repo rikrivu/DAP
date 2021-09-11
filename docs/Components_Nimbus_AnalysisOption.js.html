@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Components/Nimbus/AnalysisOption.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Components/Nimbus/AnalysisOption.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, Alert} from 'react';
+import axios from "axios"; 
+import "./AnalysisOption.css"; 
+import { Multiselect } from "multiselect-react-dropdown";
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+
+
+/**
+ * Describes the input form on the nimbus EDA webpage. It has information about
+ * all the components of the input form and hoe evry event of these components
+ * are handled. Seperate functions are defined to handle all the events. Axios 
+ * requests are sent from this file to the backend.
+ * @returns A visual representation of the input form on the nimbus EDA webpage
+ */
+
+export class AnalysisOption extends React.Component {
+  
+    constructor(props) {
+      super(props);
+      // Creating states and storing values in states
+      this.state = {
+        value1: [],
+        value2: [],
+        value3: '',
+        value4: '3',
+        value5: '0.05',
+        filename: 'report',
+        loading: false,
+        independent:'false',
+        dependent:'false',
+        max_depth:'false',
+        min_samples:'false',
+        numerical_columns: [],
+        binary_columns: [],
+        checkedA: false,
+        checkedB: false,
+        checkedC: false,
+        checkedD: false,
+        preloading: false,
+
+        
+      };
+      // Binding 'this' keyword to all the methods used
+      this.handleChange = this.handleChange.bind(this);
+      this.handleChange2 = this.handleChange2.bind(this);
+      this.handleChange3 = this.handleChange2.bind(this);
+      this.handleSubmit = this.handleSubmit.bind(this);
+      this.handleChange1 = this.handleChange1.bind(this)
+      this.onSelect = this.onSelect.bind(this)
+      this.onSelect2 = this.onSelect2.bind(this)
+      this.onSelect3 = this.onSelect3.bind(this)
+      this.onRemove = this.onRemove.bind(this)
+      this.handleChangeCheckbox = this.handleChangeCheckbox.bind(this)
+    }
+    
+    
+    // Method to handle event while user chooses elements from input dropdown menu
+    handleChange1(e1) {
+
+      this.setState(prevState => ({value4: [...prevState.value4, e1.target.value]}))
+    }
+    // Method to handle event while user chooses elements from input dropdown menu
+    
+    handleChange2(e2){
+      this.setState({ value4: e2.target.value})
+    }
+    handleChangeCheckbox = (event) => {
+      this.setState({ ...this.state, [event.target.name]: event.target.checked });
+    };
+    // Method to handle event while user chooses elements from input dropdown menu
+    
+    handleChange3(e3){
+      this.setState({ value5: e3.target.value})
+    }
+    // Method to handle event while user removes elements from the selected elements list of the multiselect drop menus
+    onRemove(selectedList, removedItem) {
+       // If element from Type of Analysis list is removed:
+       if (this.state.value1.includes(removedItem.name)){
+          // Storing the names of selected items as a list
+          var options1 = selectedList.map(function (e2) { return e2.name; });
+          // Stroing the list as a state value
+          this.setState({ 
+            value1 : options1
+          }) 
+          if(this.props.file){
+            // Creating formdata object to send it to the backend API
+            let formdata = new FormData();
+            // Adding the list of analyses selected adn the file selected
+            formdata.append("Input1", options1);
+            formdata.append("File", this.props.file);
+            // Making a POST request to the backend API with data as the formdata
+            axios({
+              async:"true",
+              crossDomain:"true",
+              url: 'https://nimbusrestapi.azurewebsites.net/analyses',
+              method: 'POST',
+            // Including all the requied headers
+            headers: { 
+              "Content-Type": "multipart/form-data",
+              "cache-control": "no-cache",
+              "Content-Disposition": "attachment;filename=raw_summ.xlsx",
+              "Postman-Token": "f1e5e023-d3d7-4039-aed6-524887ee1629",
+              "Response-Type": 'blob',
+              responseType: 'blob'
+
+
+            },
+            processData: false,
+            data:formdata
+            })
+            // Promise object 
+            .then(function (response) {
+              console.log("Result :" + response.data);
+              console.log(response.data.Binary_columns);
+              console.log(response.data.Numerical_columns);
+              // If a successful response from the API is received, then:
+              if (response.status==200){
+                this.setState({preloading:true})
+                // Set all the states to false
+                this.setState({numerical_columns:response.data.Numerical_columns})
+                this.setState({binary_columns:response.data.Binary_columns})
+                this.setState({independent:"false"})
+                this.setState({dependent:"false"})
+                this.setState({max_depth:"false"})
+                this.setState({min_samples:"false"})
+                // Set all the states to false if the Parameters array has no elements
+                if (response.data.Parameters.length==0){
+                  this.setState({independent:"false"})
+                  this.setState({dependent:"false"})
+                  this.setState({max_depth:"false"})
+                  this.setState({min_samples:"false"})
+                }
+                // Setting state of independent true if Parameters has "ycol" element
+                if (response.data.Parameters.includes("ycol")){
+                  this.setState({dependent:"true"})
+                }
+                // Setting state of dependent true if Parameters has "xcols" element
+                if (response.data.Parameters.includes("xcols")){
+                  this.setState({independent:"true"})
+                }
+                // Setting state of max_depth true if Parameters has "max_depth" element
+                if (response.data.Parameters.includes("max_depth")){
+                  this.setState({max_depth:"true"})
+                }
+                // Setting state of min_samples true if Parameters has "min_samples_leaf" element
+                if (response.data.Parameters.includes("min_samples_leaf")){
+                  this.setState({min_samples:"true"})
+                }
+              }
+              // Throw an error if it receives a faulty response from the API
+              else{
+                alert("Error occured while processing data on the server. Please contact the administrator for more details.");
+              }
+            }.bind(this))
+            // Throw an error if it receives a faulty response from the API
+            .catch(function (error) {
+              alert("Error occured while processing data on the server. Please contact the administrator for more details.");
+              console.log("Post Error : " +error);
+            });
+          }
+          else{
+            alert("Select a file and try again!")
+          }
+
+       }
+       // If elements are removed from independent variables list:
+       else if (this.state.value2.includes(removedItem.name)) {
+          // Storing the names of selected items as a list
+          var options = selectedList.map(function (el) { return el.name; });
+          // Stroing the list as a state value
+          this.setState({ 
+            value2 : options
+          }) 
+       } 
+
+  }
+    // Handling onSelect event for independent variables
+    onSelect(selectedList, selectedItem) {
+      console.log(this.props.file);
+      // Storing the names of selected items as a list
+      var options = selectedList.map(function (el) { return el.name; });
+      // Stroing the list as a state value
+      this.setState({ 
+        value2 : options
+      }) 
+    
+    
+    }
+    // Handling onSelect event for Type of Analysis
+    onSelect3(selectedList, selectedItem) {
+      // Storing the names of selected items as a list
+      var options1 = selectedList.map(function (e2) { return e2.name; });
+      // Stroing the list as a state value
+      this.setState({ 
+        value1 : options1
+      }) 
+      if(this.props.file){
+        
+      
+      // Creating formdata object to send it to the backend API
+        let formdata = new FormData();
+        // Adding the list of analyses selected and the file selected
+        formdata.append("Input1", options1);
+        formdata.append("File", this.props.file);
+        // Making a POST request to the backend API with data as the formdata
+        axios({
+          async:"true",
+          crossDomain:"true",
+          url: 'https://nimbusrestapi.azurewebsites.net/analyses',
+          method: 'POST',
+        // Including all the required headers
+        headers: { 
+          "Content-Type": "multipart/form-data",
+          "cache-control": "no-cache",
+          "Content-Disposition": "attachment;filename=raw_summ.xlsx",
+          "Postman-Token": "f1e5e023-d3d7-4039-aed6-524887ee1629",
+          "Response-Type": 'blob',
+          responseType: 'blob'
+
+
+        },
+        processData: false,
+        data:formdata
+        })
+        // Promise object
+        .then(function (response) {
+
+          console.log("Result :" + response.data);
+          console.log(response.data.Binary_columns);
+          console.log(response.data.Numerical_columns);
+          // If a successful response from the API is received, then:
+          if (response.status==200){
+            this.setState({preloading:true})
+            this.setState({numerical_columns:response.data.Numerical_columns})
+            this.setState({binary_columns:response.data.Binary_columns})
+            // Setting state of independent true if Parameters has "ycol" element
+            if (response.data.Parameters.includes("ycol")){
+              this.setState({dependent:"true"})
+            }
+            // Setting state of dependent true if Parameters has "xcols" element
+            if (response.data.Parameters.includes("xcols")){
+              this.setState({independent:"true"})
+            }
+            // Setting state of max_depth true if Parameters has "max_depth" element
+            if (response.data.Parameters.includes("max_depth")){
+              this.setState({max_depth:"true"})
+            }
+            // Setting state of min_samples true if Parameters has "min_samples_leaf" element
+            if (response.data.Parameters.includes("min_samples_leaf")){
+              this.setState({min_samples:"true"})
+            }
+          }
+          // Dialog box if it receives a faulty response from the API
+          else{
+            alert("Error occured while processing data on the server. Please contact the administrator for more details.");
+          }
+        }.bind(this))
+        // Dialog box if it receives a faulty response from the API
+        .catch(function (error) {
+          alert("Error occured while processing data on the server. Please contact the administrator for more details.");
+          console.log("Post Error : " +error);
+        });
+      }
+      else{
+        alert("Please select a file and try again!")
+      }  
+    
+    }
+    // Handling onSelect event for dependent variables
+    onSelect2(selectedList, selectedItem) {
+      // Stroing the list as a state value
+      this.setState({ 
+        value3 : selectedItem.name
+      }) 
+    
+    
+    }
+    // Handling hnadleChange event for the multiselect dropdown menyu
+    handleChange(e) {
+      // Stroing the list as a state value
+      this.setState({ 
+        [e.target.name] :  e.target.value
+      }) 
+    }
+    // Handling onSubmit event for the Submit button
+    handleSubmit(event) {
+      if(this.props.file){
+        if(this.state.value1.length!=0){
+          if(this.state.preloading){
+            event.preventDefault();
+            console.log(this.state.checkedA);
+            console.log(this.state.checkedB);
+            console.log(this.state.checkedC);
+            console.log(this.state.checkedD);
+            console.log(this.props.file)
+            let preprocessing_array=[];
+            if(this.state.checkedA){
+              preprocessing_array.push("Outlier Removal");
+              
+            }
+            if(this.state.checkedB){
+              preprocessing_array.push("Missing Value");
+            }
+            if(this.state.checkedC){
+              preprocessing_array.push("Regrouping categories");
+            }
+            if(this.state.checkedD){
+              preprocessing_array.push("Binarize");
+              console.log(this.state.dependent);
+            }
+            console.log(preprocessing_array)
+            let independent_variables_array = Array.from(this.state.value2);
+            let numerical_columns_array = Array.from(this.state.numerical_columns);
+            
+            if(this.state.checkedD &amp;&amp; this.state.dependent=="false"){
+              console.log("Here1")
+              alert("Please uncheck Binarize and try again!")
+            }
+            else if(this.state.value3=="" &amp;&amp; this.state.dependent=="true"){
+              console.log("Here2")
+              alert("Please select one dependent variable")
+            }
+            else if(this.state.value2.length==0 &amp;&amp; this.state.independent=="true"){
+              console.log("Here3")
+              alert("Please select atleast one independent variable")
+            }
+            else if(this.state.value1.length==0){
+              console.log("Here4")
+              alert("Please select atleast one type of analysis")
+            }
+            else if(this.state.value2.includes(this.state.value3) &amp;&amp; this.state.dependent=="true"){
+              console.log("Here5")
+              alert("Dependant and Independant variables cannot be the same")
+            }
+            // else if(this.state.dependent == "true" &amp;&amp; !this.state.binary_columns.includes(this.state.value3)){
+            //   alert("Please choose a binary column as the dependent variable and try again!")
+            // }
+            else if ((this.state.value1.includes("Univariate") || this.state.value1.includes("Bivariate") || this.state.value1.includes("Y-Summary Numerical"))&amp;&amp;!(independent_variables_array.some(r=> numerical_columns_array.indexOf(r) >= 0))){
+              console.log("Here6")
+              //if(!(independent_variables_array.some(r=> numerical_columns_array.indexOf(r) >= 0))){
+              //const found = independent_variables_array.some(r=> numerical_columns_array.indexOf(r) >= 0)
+                alert("Please add a numerical column to the independent variables list and try again!")
+              //}
+            }
+            else{
+              console.log("YASS")
+              this.state.loading=true;
+              this.props.callback(this.state.loading);
+              let formData = new FormData();
+              formData.append("Input1", this.state.value1);
+              formData.append("Input2", this.state.value2);
+              formData.append("Input3", this.state.value3);
+              formData.append("Input4", this.state.value4);
+              formData.append("Input5", this.state.value5);
+              formData.append("File", this.props.file);
+              formData.append("Preprocessing", preprocessing_array);
+
+              axios({
+                async:"true",
+                crossDomain:"true",
+                url: 'https://nimbusrestapi.azurewebsites.net/analyse',
+                method: 'POST',
+
+              headers: { 
+                "Content-Type": "multipart/form-data",
+                "cache-control": "no-cache",
+                "Content-Disposition": "attachment;filename=raw_summ.xlsx",
+                "Postman-Token": "f1e5e023-d3d7-4039-aed6-524887ee1629",
+                "Response-Type": 'blob',
+                responseType: 'blob'
+
+
+              },
+              processData: false,
+              data:formData
+              })
+              .then(function (response) {
+                if (response.status==200){
+                  console.log(response.data)
+                  this.setState({loading:false})
+                  this.props.callback(this.state.loading);
+                  this.state.filename=response.data.filename;
+                  this.props.parentCallback(response.data);
+                }
+              }.bind(this))
+              .catch(function (error) {
+                this.state.loading=false;
+                this.props.callback(this.state.loading);
+                alert("Error occured while processing data on the server. Please contact the administrator for more details.")
+                console.log("Post Error : " +error);
+
+              }.bind(this));
+
+            }
+          }
+          
+          else{
+            alert("Please wait till the backend completes processing the data")
+            console.log("YASS")
+          }
+        }
+        else{
+          alert("Please choose atleast one type of analysis and try again!")
+        }
+      }
+      else{
+        alert("Please choose a file and try again!")
+      }
+    }
+  
+    render() {
+        // Creating an array of different types of analysis
+        var staticArray= [
+          { name: "Raw Summary", selector: "Raw Summary" },
+          { name: "Raw Summary Categorical", selector: "Raw Summary Categorical" },
+          { name: "Univariate", selector: "Univariate" },
+          { name: "Y-Summary Numerical", selector: "Y-Summary Numerical" },
+          { name: "Univariate Categorical", selector: "Univariate Categorical" },
+          { name: "Correlation", selector: "Correlation" },
+          { name: "Bivariate", selector: "Bivariate" },
+          { name:"Decision Tree", selector: "Decision Tree"},
+          { name:"Clustering Analysis", selector:"Clustering Analysis"}
+        ]
+        
+      return (
+        
+        &lt;div>
+        {
+          // Input form to include Type of Analysis, Dependent, Independent variables, Max Depth, Minimum Leaf Samples
+        }
+        &lt;form onSubmit={this.handleSubmit}>
+        &lt;label className="spbt">
+            Preprocessing :  &amp;nbsp;
+            &lt;br>&lt;/br>
+        &lt;div>
+          
+          &lt;FormControlLabel
+            control={&lt;Checkbox checked={this.state.checkedB} onChange={this.handleChangeCheckbox} name="checkedB" />}
+            label="Missing value imputation"
+          />
+          &lt;FormControlLabel
+            control={&lt;Checkbox checked={this.state.checkedA} onChange={this.handleChangeCheckbox} name="checkedA" />}
+            label="Outlier removal"
+          />
+          &lt;FormControlLabel
+            control={&lt;Checkbox checked={this.state.checkedC} onChange={this.handleChangeCheckbox} name="checkedC" />}
+            label="Regrouping categories"
+          />
+          &lt;FormControlLabel
+            control={&lt;Checkbox checked={this.state.checkedD} onChange={this.handleChangeCheckbox} name="checkedD" />}
+            label="Binarize"
+          />
+        &lt;/div>
+          &lt;/label>
+          &lt;br>&lt;/br>
+           {
+             // Multiselect dropdown menu for Type of Analysis
+           }
+          &lt;label className="spbt">
+            Type of Analysis :  &amp;nbsp;
+            
+            &lt;Multiselect
+            name="value1"
+            options={staticArray}
+            displayValue="name"
+            onSelect={this.onSelect3}
+            onRemove={this.onRemove}
+            showCheckbox={true}  
+            placeholder="Select type of analysis"  
+            />
+
+
+          &lt;/label>
+          {
+            // Multiselect dropdown menu for independent variables
+            // Rendering it only if independent state value is true
+          }
+          {
+           this.state.independent!="false" &amp;&amp;
+          &lt;label className="spbt">
+            Independant Variables :
+            &lt;Multiselect
+            onSelect={this.onSelect}
+            onRemove={this.onRemove}
+            options={this.props.columns}
+            displayValue="name"
+            showCheckbox={true} 
+            placeholder="Select independent variables"     
+          />
+          &lt;/label >
+          }
+          &lt;br>&lt;/br>
+          {
+            // Single select dropdown menu for Dependent Variable
+            // Rendering it only if the dependent state value is true
+          }
+          {
+          this.state.dependent!="false" &amp;&amp;
+          &lt;label className="spbt">
+            Dependant Variable :  &amp;nbsp;
+            &lt;Multiselect
+            name="value3"
+            singleSelect
+            onSelect={this.onSelect2}
+            onRemove={this.onRemove}
+            options={this.props.columns}
+            displayValue="name"
+            showCheckbox={true}  
+            placeholder="Select dependent variable"   
+          />
+          &lt;/label>
+           }
+           &lt;br>&lt;/br>
+           {
+             // Textfield input for max depth, rendering it only if max_depth state value is true
+           }
+          {this.state.max_depth!='false' &amp;&amp;
+          &lt;label className="spbt">
+            Max Depth : &amp;nbsp; &lt;br>&lt;/br>
+            &lt;input className="input" placeholder="3" type="text" onChange={this.handleChange2} />
+          &lt;/label>
+          }
+          &lt;br>&lt;/br>
+          {
+            // Textfield input for minimum leaf samples, rendering it only if min_samples state value is true
+          }
+          {
+          this.state.min_samples!='false' &amp;&amp;
+          &lt;label className="spbt">
+            Minimum Leaf Samples : &amp;nbsp; &lt;br>&lt;/br>
+            &lt;input className="input" placeholder="0.05" type="text" onChange={this.handleChange3} />
+          &lt;/label>
+          }
+          &lt;br>&lt;/br>
+          {
+            // Rendering the submit button in the input form
+          }
+          &lt;input type="submit" value="Submit" />
+        &lt;/form>
+        &lt;/div>
+      );
+    }
+  }
+
+export default AnalysisOption;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnalysisOption.html">AnalysisOption</a></li><li><a href="Output.html">Output</a></li></ul><h3>Global</h3><ul><li><a href="global.html#about">about</a></li><li><a href="global.html#Card">Card</a></li><li><a href="global.html#contactUs">contactUs</a></li><li><a href="global.html#createLayout">createLayout</a></li><li><a href="global.html#FileInput">FileInput</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Landingpage">Landingpage</a></li><li><a href="global.html#Nimbus">Nimbus</a></li><li><a href="global.html#otherTools">otherTools</a></li><li><a href="global.html#Router1">Router1</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu May 06 2021 00:37:49 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

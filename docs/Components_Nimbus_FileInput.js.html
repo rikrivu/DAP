@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Components/Nimbus/FileInput.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Components/Nimbus/FileInput.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState} from 'react';
+import * as XLSX from 'xlsx';
+import App2 from './AnalysisOption';
+import { Tooltip, IconButton } from '@material-ui/core';
+import HelpIcon from '@material-ui/icons/Help';
+
+const tool = {
+  display: "inline",
+  right: "0",
+  marginRight: "90%",
+}
+
+/**
+ * Describes the file input section of the input form on the nimbus EDA page. It describes what the input file
+ * section looks like and also integrates the AnalysisOption component inorder to integrate all other 
+ * input form components. Column names are obtained after the user inputs the CSV or an Excel file.
+ * @returns A visual representation of the file input section of the input form on the nimbus EDA webpage
+ */
+
+function FileInput(props) {
+  // State to store columns of the input csv file
+  const [columns, setColumns] = useState([]);
+  // State to store data of the input csv file
+  const [data, setData] = useState([]);
+  // State to store the input csv file
+  const [selectedFile, setSelectedFile] = useState(null);
+   
+  // Call back function to receive data from child component
+  const callbackFunction = (childData) => {
+    props.parentCallback(childData);
+}
+// Call back function to receive loading related data from child component
+  const childcallback = (childData) => {
+  props.callback(childData);
+
+}
+
+  // process CSV data
+  const processData = dataString => {
+    const dataStringLines = dataString.split(/\r\n|\n/);
+    const headers = dataStringLines[0].split(/,(?![^"]*"(?:(?:[^"]*"){2})*[^"]*$)/);
+    
+    const list = [];
+    
+    // prepare columns list from headers
+    const columns = headers.map(c => ({
+      name: c,
+      selector: c,
+    }));
+    if (columns[0].name == ""){
+      columns.shift();
+    }
+    console.log(columns);
+    // Storing the values as state values
+    setData(list);
+    setColumns(columns);
+    
+    
+  }
+
+  // handle file upload
+  const handleFileUpload = e => {
+    const file = e.target.files[0];
+    setSelectedFile(file)
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      /* Parse data */
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: 'binary' });
+      /* Get first worksheet */
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      /* Convert array of arrays */
+      const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
+      processData(data);
+    };
+    reader.readAsBinaryString(file);
+  }
+  const text = 'Hello, this is line one \n and this is line 2';
+    return (
+        &lt;div style={{textAlign: "center"}}>
+            &lt;Tooltip style={tool} title={&lt;div style={{fontSize:"14px", paddingBottom:"5px", paddingTop:"5px"}}>Help: &lt;br />&lt;br />1. Consider clearing browser cache before using this tool&lt;br />&lt;br />2. Binarize the dependent variable if it is not a binary column&lt;br />&lt;br />3. Add a numerical column to the independent variables when performing a Univariate or Bivariate or Y-Summary Numerical analysis&lt;br />&lt;br />4. Make sure that the dependent variable atleast has two classes&lt;br />&lt;br />5. Select only one analysis at a time for large input files&lt;br />&lt;br />6. Bivariate analysis alone cannot be done, consider doing an analysis before doing bivariate analysis&lt;br />&lt;br />7. Consider doing missing value imputation if the input file has missing values in it&lt;br />&lt;br />8. Consider not doing raw summary categorical analysis for files containing date-time column&lt;br />&lt;br />&lt;/div>}>
+              &lt;IconButton aria-label="help">
+                &lt;HelpIcon />
+              &lt;/IconButton>
+            &lt;/Tooltip>
+            &lt;h3>Select a CSV or an Excel file&lt;/h3>
+                &lt;br>&lt;/br>
+                {
+                  // Rendering input file element on the EDA page
+                }
+                &lt;input
+                  type="file"
+                  accept=".csv, .xlsx, .xls"
+                  onChange={handleFileUpload}
+                  
+                />
+                &lt;br>&lt;/br>
+                &lt;br>&lt;/br>
+                {
+                  // Rendering AnalysisOption component
+                }
+                &lt;App2 callback={childcallback} parentCallback={callbackFunction} columns={columns} data={data} file={selectedFile}/>
+        &lt;/div>
+    )
+}
+
+export default FileInput
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnalysisOption.html">AnalysisOption</a></li><li><a href="Output.html">Output</a></li></ul><h3>Global</h3><ul><li><a href="global.html#about">about</a></li><li><a href="global.html#Card">Card</a></li><li><a href="global.html#contactUs">contactUs</a></li><li><a href="global.html#createLayout">createLayout</a></li><li><a href="global.html#FileInput">FileInput</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Landingpage">Landingpage</a></li><li><a href="global.html#Nimbus">Nimbus</a></li><li><a href="global.html#otherTools">otherTools</a></li><li><a href="global.html#Router1">Router1</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu May 06 2021 00:37:49 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

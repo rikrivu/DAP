@@ -1,0 +1,94 @@
+.button-wrapper{
+    background-color: rgb(99, 81, 206);
+    border: none;
+    color: white;
+    padding: 4px 8px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    border-radius:5px;
+    display: flex;
+    justify-content: center;
+}
+
+// .fileUpload {
+//     background-color: rgb(99, 81, 206);
+// 	border-radius: 5px;
+// 	color: #fff;
+// 	margin: 1.25em auto;/*20px/16px 0*/
+// 	overflow: hidden;
+//     padding: 10px 28px;
+// 	position: relative;
+// 	width: 110px;
+//     cursor: pointer;
+// }
+.custom-file-input::-webkit-file-upload-button {
+    visibility: hidden;
+}
+
+.custom-file-input::before {
+    content: 'Select some files';
+    display: inline-block;
+    background: -webkit-linear-gradient(top, #f9f9f9, #e3e3e3);
+    border: 1px solid #999;
+    border-radius: 3px;
+    padding: 5px 8px;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    text-shadow: 1px 1px #fff;
+    font-weight: 700;
+    font-size: 10pt;
+}
+
+.custom-file-input:hover::before {
+    border-color: black;
+}
+
+.custom-file-input:active::before {
+    background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+}
+.label-heading{
+    font-weight: 500px;
+}
+
+.fileUpload:hover, .fileUpload:active, .fileUpload:focus,.button-wrapper:active {
+	background: rgb(139, 131, 180);
+  cursor: pointer;
+}
+// .fileUpload input.upload {
+//     position: absolute;
+//     top: 0;
+//     right: 0;
+//     margin: 0;
+//     padding: 0;
+//     font-size: 20px;
+//     cursor: pointer;
+//     opacity: 0;
+//     filter: alpha(opacity=0);
+//     width: 148px;
+//     height: 46px;
+//     cursor: pointer;
+// }
+
+// input[type="file"] {
+//     position: fixed;
+//     right: 100%;
+//     bottom: 100%;
+// }
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+.searchWrapper {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    min-height: 22px;
+    position: relative;
+    width: fit-content;
+}
+

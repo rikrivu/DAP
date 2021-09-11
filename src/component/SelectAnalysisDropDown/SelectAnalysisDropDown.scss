@@ -1,0 +1,13 @@
+.highlightOption {
+    background: var(--color-grey);
+    color: #fff;
+
+}
+.optionListContainer {
+    position: absolute;
+     width: 33%; 
+    background: #fff;
+    border-radius: 4px;
+    margin-top: 1px;
+    z-index: 2;
+}

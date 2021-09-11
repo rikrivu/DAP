@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Pages/NIMBUS/nimbus.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Pages/NIMBUS/nimbus.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import Header from '../../Components/Shared/Header/Header';
+import Footer from '../../Components/Shared/Footer/Footer';
+import FileInput from '../../Components/Nimbus/FileInput';
+import Output from '../../Components/Nimbus/Output';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Row,  Col } from 'react-bootstrap';
+import './nimbus.css';
+import cardOutline from '../../Components/Nimbus/cardOutline';
+
+/**
+ * Describes the outline for the nimbus EDA page. This component describes what other
+ * components must be included and where each of these components are defined or located
+ * on the webpage.
+ * @returns A visual representation of nimbus EDA webpage
+ */
+
+function Nimbus() {
+// Creating hook state to store the filename received from the backend API
+const [file, setFile] = useState(null);
+// Creating hook state to store the dataframes received from the backend API
+const [dataFrames, setdataFrames] = useState(null);
+// Creating hook state to store the lists of data received from the backend API
+const [dataLists, setdataLists]=useState({"":""});
+// Creating hook state to store the loading state
+const [loading, setLoading] = useState(false);
+const [imageExists, setImageExists] = useState(false);
+
+// Created a callback function to receive data from the child and store the data in respective states
+const callbackFunction = (childData) => {
+    console.log(childData)
+    setdataFrames(childData.dataFrame);
+    setFile(childData["filename"]);
+    setdataLists(childData.list);
+    setImageExists(childData.Image_exists)
+}
+
+// Created a callback function to receive data from the child and store loading data in its respective state
+const childcallback = (childData) => {
+  setLoading(childData);
+}
+  
+  return (
+
+    &lt;div style={{height:"100%"}}>
+      &lt;Header />
+      {
+        //Using a container to hold all the components
+      }
+      &lt;Container fluid>
+        &lt;Row>
+          {
+            // Calling the FileInput component
+          }
+          &lt;Col sm="5" md="5" lg="5" className="column1">
+              &lt;div className="card">
+              {/* &lt;cardOutline className="card"> */}
+                  &lt;FileInput callback={childcallback} parentCallback={callbackFunction}/>
+              {/* &lt;/cardOutline> */}
+              &lt;/div>
+          &lt;/Col>
+          &lt;Col sm="7" md="7" lg="7">
+              
+          {
+            // Output Window to display the results
+          }
+              &lt;div className="card1">
+              {/* &lt;cardOutline className="card1"> */}
+                  &lt;h3 style={{textAlign: "center", paddingBottom:"5px"}}>Results&lt;/h3> 
+                  {
+                    file==null &amp;&amp; loading==false &amp;&amp;
+                    &lt;h6 style={{textAlign: "center"}}>No Results to display&lt;/h6>
+                  }
+                  {
+                    // Checking for loading and if it is true, rendering loading component
+                  }
+                  {loading==true &amp;&amp;
+                  &lt;div className="alertbox">
+                    &lt;img style={{textAlign:"center", marginLeft:"auto", marginRight:"auto"}} alt="Loading" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif">&lt;/img>
+                  &lt;/div>
+                  }
+                  {
+                    // Rendering the Output Component if it gets the correct data from backend API
+                  }
+                  { file!=null &amp;&amp;
+                  &lt;Output image={imageExists} filename={file} tabledata={dataFrames} list={dataLists}/>
+                  }
+              {/* &lt;/cardOutline> */}
+              &lt;/div>
+              
+          &lt;/Col>
+        &lt;/Row>
+        
+        
+      &lt;/Container>
+      {
+        //Rendering the Footer component
+      }
+      &lt;Footer style={{marginTop:"20%"}} className="footer" /> 
+      
+
+    &lt;/div>
+    
+    
+
+  );
+  
+
+}
+
+export default Nimbus=React.memo(Nimbus);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnalysisOption.html">AnalysisOption</a></li><li><a href="Output.html">Output</a></li></ul><h3>Global</h3><ul><li><a href="global.html#about">about</a></li><li><a href="global.html#Card">Card</a></li><li><a href="global.html#contactUs">contactUs</a></li><li><a href="global.html#createLayout">createLayout</a></li><li><a href="global.html#FileInput">FileInput</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Landingpage">Landingpage</a></li><li><a href="global.html#Nimbus">Nimbus</a></li><li><a href="global.html#otherTools">otherTools</a></li><li><a href="global.html#Router1">Router1</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu May 06 2021 00:37:49 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

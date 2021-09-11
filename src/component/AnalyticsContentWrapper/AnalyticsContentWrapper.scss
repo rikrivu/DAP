@@ -1,0 +1,14 @@
+.small-wrapper, .large-wrapper {
+    background: linear-gradient(315deg, var(--color-white) 0%, var(--color-gradient-sky) 74%);
+    border-radius: 0.25rem;
+    box-shadow: 3px 2px 5px 0px var(--color-grey);
+}
+
+.small-wrapper {
+    padding: 15px;
+}
+
+.large-wrapper {
+    padding: 5px;
+    height: 372px;
+}

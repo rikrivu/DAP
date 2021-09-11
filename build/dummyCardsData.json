@@ -1,0 +1,37 @@
+[
+    {
+        "name": "CAR",
+        "bodyText": "GHD InSite is a decision support tool with a map-based web interface to a data lake that stores multiple data for a given site or portfolio. Users will be able to explore all the data stored in this single integrated environment. Custom analyses can be performed, including running trend tests for concentrations, or fitting a single exponential decay function to a series of concentrations. Other products developed by GHD will be requestable and explorable through the tool, for example 3D models of the subsurface environment.",
+        "url": ""
+    },
+    {
+        "name": "Data Mining",
+        "bodyText": "GHD InSite is a decision support tool with a map-based web interface to a data lake that stores multiple data for a given site or portfolio. Users will be able to explore all the data stored in this single integrated environment. Custom analyses can be performed, including running trend tests for concentrations, or fitting a single exponential decay function to a series of concentrations. Other products developed by GHD will be requestable and explorable through the tool, for example 3D models of the subsurface environment.",
+        "url": "datamining"
+    },
+    {
+        "name": "EHS",
+        "bodyText": "GHD InSite is a decision support tool with a map-based web interface to a data lake that stores multiple data for a given site or portfolio. Users will be able to explore all the data stored in this single integrated environment. Custom analyses can be performed, including running trend tests for concentrations, or fitting a single exponential decay function to a series of concentrations. Other products developed by GHD will be requestable and explorable through the tool, for example 3D models of the subsurface environment.",
+        "url": ""
+    },
+    {
+        "name": "NLP",
+        "bodyText": "GHD InSite is a decision support tool with a map-based web interface to a data lake that stores multiple data for a given site or portfolio. Users will be able to explore all the data stored in this single integrated environment. Custom analyses can be performed, including running trend tests for concentrations, or fitting a single exponential decay function to a series of concentrations. Other products developed by GHD will be requestable and explorable through the tool, for example 3D models of the subsurface environment.",
+        "url": ""
+    },
+    {
+        "name": "Utility",
+        "bodyText": "GHD InSite is a decision support tool with a map-based web interface to a data lake that stores multiple data for a given site or portfolio. Users will be able to explore all the data stored in this single integrated environment. Custom analyses can be performed, including running trend tests for concentrations, or fitting a single exponential decay function to a series of concentrations. Other products developed by GHD will be requestable and explorable through the tool, for example 3D models of the subsurface environment.",
+        "url": ""
+    },
+    {
+        "name": "Visualization",
+        "bodyText": "GHD InSite is a decision support tool with a map-based web interface to a data lake that stores multiple data for a given site or portfolio. Users will be able to explore all the data stored in this single integrated environment. Custom analyses can be performed, including running trend tests for concentrations, or fitting a single exponential decay function to a series of concentrations. Other products developed by GHD will be requestable and explorable through the tool, for example 3D models of the subsurface environment.",
+        "url": ""
+    },
+    {
+        "name": "Water Analytics",
+        "bodyText": "GHD InSite is a decision support tool with a map-based web interface to a data lake that stores multiple data for a given site or portfolio. Users will be able to explore all the data stored in this single integrated environment. Custom analyses can be performed, including running trend tests for concentrations, or fitting a single exponential decay function to a series of concentrations. Other products developed by GHD will be requestable and explorable through the tool, for example 3D models of the subsurface environment.",
+        "url": ""
+    }
+]
